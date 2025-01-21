@@ -1,0 +1,48 @@
+word = input("Select your word: ")
+
+
+word_list = list(word)  
+masked_word = ["*"] * len(word)  
+nb_error = 0  
+max_errors = 9  
+
+
+print("".join(masked_word))
+
+
+while nb_error < max_errors:
+    letter = input("Enter your letter: ")
+
+    
+    if len(letter) > 1:
+        if letter == word:
+            print("Win!!!!!!!")
+            break
+        else:
+            print("Wrong word! Try again.")
+            nb_error += 1
+            print(f"Errors: {nb_error}/{max_errors}")
+
+    
+    elif len(letter) == 1:
+        if letter in word_list:
+            for index, char in enumerate(word_list):
+                if char == letter:
+                    masked_word[index] = char
+            print("Good letter!")
+            print("".join(masked_word))
+        else:
+            print("Wrong letter!")
+            nb_error += 1
+            print(f"Errors: {nb_error}/{max_errors}")
+
+        
+        if "".join(masked_word) == word:
+            print("Congratulations! µ guessed the word!")
+            break
+    else:
+        print("Invalid input. Please enter a letter or a word.")
+
+
+if nb_error == max_errors:
+    print("You lost! The word was:", word)
