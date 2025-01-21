@@ -1,0 +1,57 @@
+def game():
+    while True:  # boucle for the replay the game
+       
+        word = input("Select your word: ").lower()  # Convert in miniscule
+        word_list = list(word)
+        masked_word = ["*"] * len(word)
+        nb_error = 0
+        max_errors = 9
+
+        print("\n" + "".join(masked_word))  # display the word 
+
+        # boucle main
+        while nb_error < max_errors:
+            letter = input("Enter your letter: ").lower()
+
+            if len(letter) > 1:  # Utilisator guess the  word
+                if letter == word:
+                    print("Win!!!!!!! You guessed the word!")
+                    break
+                else:
+                    print("Wrong word! Try again.")
+                    nb_error += 1
+                    print(f"Errors: {nb_error}/{max_errors}")
+
+            elif len(letter) == 1:  # Utilisator take one letter 
+                if letter in word_list:
+                    for index, char in enumerate(word_list):
+                        if char == letter:
+                            masked_word[index] = char
+                    print("Good letter!")
+                    print("".join(masked_word))
+                else:
+                    print("Wrong letter!")
+                    nb_error += 1
+                    print(f"Errors: {nb_error}/{max_errors}")
+
+                # Verification if we win
+                if "".join(masked_word) == word:
+                    print("Congratulations! You guessed the word!")
+                    break
+
+            else:
+                print("Invalid input. Please enter a letter or a word.")
+
+        #Verification if we loose
+        if nb_error == max_errors:
+            print(f"SO BADDDDD!!!!! The word was: {word}")
+
+        # ask to replay
+        play_again = input("Do you want to play again? (yes/no): ").lower()
+        if play_again != "yes":
+            print("Goodbye, my friend!!!")
+            break
+
+
+# realod the game
+game()
