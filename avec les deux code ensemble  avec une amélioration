@@ -1,0 +1,85 @@
+import os
+import random
+
+def game():
+    # Load words from the file
+    try:
+        with open("/mnt/chromeos/MyFiles/texte/Document sans titre.txt", "r", encoding="utf-8") as file:
+            words = file.readlines()
+    except FileNotFoundError:
+        print("Error: Word file not found. Make sure the file exists and try again.")
+        return
+
+    # Remove whitespace or newline characters from each word
+    words = [word.strip() for word in words]
+
+    while True:  # Loop to replay the game
+        print("\n=== Welcome to the Hangman Game ===")
+        print("1. Solo Mode (against the computer)")
+        print("2. PvP Mode (one player sets a word for the other to guess)")
+        mode = input("Choose a mode (1 or 2): ").strip()
+
+        if mode == "1":
+            # Solo Mode: Select a random word
+            chosen_word = random.choice(words).lower()
+        elif mode == "2":
+            # PvP Mode: One player enters a word
+            chosen_word = input("Player 1, enter a word to guess: ").strip().lower()
+            os.system('cls' if os.name == 'nt' else 'clear')  # Clear the screen to hide the word
+        else:
+            print("Invalid option. Please choose 1 or 2.")
+            continue
+
+        word_list = list(chosen_word)
+        masked_word = ["*"] * len(chosen_word)
+        num_errors = 0
+        max_errors = 9
+
+        print("\n" + "".join(masked_word))  # Display the masked word
+
+        # Main game loop
+        while num_errors < max_errors:
+            letter = input("Enter a letter or guess the word: ").lower()
+
+            if len(letter) > 1:  # If the user guesses the word
+                if letter == chosen_word:
+                    print("Congratulations! You guessed the word!")
+                    break
+                else:
+                    print("Wrong word! Try again.")
+                    num_errors += 1
+                    print(f"Errors: {num_errors}/{max_errors}")
+
+            elif len(letter) == 1:  # If the user guesses a single letter
+                if letter in word_list:
+                    for index, char in enumerate(word_list):
+                        if char == letter:
+                            masked_word[index] = char
+                    print("Good letter!")
+                    print("".join(masked_word))
+                else:
+                    print("Wrong letter!")
+                    num_errors += 1
+                    print(f"Errors: {num_errors}/{max_errors}")
+
+                # Check if the user has won
+                if "".join(masked_word) == chosen_word:
+                    print("Congratulations! You guessed the word!")
+                    break
+
+            else:
+                print("Invalid input. Please enter a letter or a word.")
+
+        # Check if the user lost
+        if num_errors == max_errors:
+            print(f"Too bad! The word was: {chosen_word}")
+
+        # Ask to replay
+        play_again = input("Do you want to play again? (yes/no): ").lower()
+        if play_again != "yes":
+            print("Goodbye! See you next time!")
+            break
+
+
+# Start the game
+game()
