@@ -1,0 +1,128 @@
+import pygame
+import random
+import os
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Hangman Game")
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+
+# Fonts
+FONT_LARGE = pygame.font.SysFont("arial", 48)
+FONT_MEDIUM = pygame.font.SysFont("arial", 36)
+FONT_SMALL = pygame.font.SysFont("arial", 24)
+
+# Load words from file
+def load_words():
+    try:
+        with open("/mnt/chromeos/MyFiles/texte/Document sans titre.txt", "r", encoding="utf-8") as file:
+            return [word.strip() for word in file.readlines()]
+    except FileNotFoundError:
+        print("Error: Word file not found. Make sure the file exists and try again.")
+        return []
+
+# Draw the hangman based on the number of errors
+def draw_hangman(errors):
+    base_x, base_y = 200, 500
+    if errors >= 1:  # Base
+        pygame.draw.line(screen, BLACK, (base_x, base_y), (base_x + 200, base_y), 5)
+    if errors >= 2:  # Pole
+        pygame.draw.line(screen, BLACK, (base_x + 100, base_y), (base_x + 100, base_y - 300), 5)
+    if errors >= 3:  # Top bar
+        pygame.draw.line(screen, BLACK, (base_x + 100, base_y - 300), (base_x + 200, base_y - 300), 5)
+    if errors >= 4:  # Rope
+        pygame.draw.line(screen, BLACK, (base_x + 200, base_y - 300), (base_x + 200, base_y - 250), 5)
+    if errors >= 5:  # Head
+        pygame.draw.circle(screen, BLACK, (base_x + 200, base_y - 220), 30, 5)
+    if errors >= 6:  # Body
+        pygame.draw.line(screen, BLACK, (base_x + 200, base_y - 190), (base_x + 200, base_y - 120), 5)
+    if errors >= 7:  # Left arm
+        pygame.draw.line(screen, BLACK, (base_x + 200, base_y - 180), (base_x + 170, base_y - 150), 5)
+    if errors >= 8:  # Right arm
+        pygame.draw.line(screen, BLACK, (base_x + 200, base_y - 180), (base_x + 230, base_y - 150), 5)
+    if errors >= 9:  # Left leg
+        pygame.draw.line(screen, BLACK, (base_x + 200, base_y - 120), (base_x + 170, base_y - 90), 5)
+    if errors >= 10:  # Right leg
+        pygame.draw.line(screen, BLACK, (base_x + 200, base_y - 120), (base_x + 230, base_y - 90), 5)
+
+# Main game loop
+def game():
+    words = load_words()
+    if not words:
+        return
+
+    running = True
+    clock = pygame.time.Clock()
+
+    # Game state
+    chosen_word = random.choice(words).lower()
+    word_list = list(chosen_word)
+    masked_word = ["*"] * len(chosen_word)
+    guessed_letters = set()
+    num_errors = 0
+    max_errors = 10
+
+    while running:
+        screen.fill(WHITE)
+
+        # Display masked word
+        word_surface = FONT_LARGE.render(" ".join(masked_word), True, BLACK)
+        screen.blit(word_surface, (400 - word_surface.get_width() // 2, 100))
+
+        # Display guessed letters
+        guessed_surface = FONT_SMALL.render(f"Guessed letters: {', '.join(guessed_letters)}", True, BLACK)
+        screen.blit(guessed_surface, (50, 200))
+
+        # Draw hangman
+        draw_hangman(num_errors)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.unicode.isalpha():
+                    letter = event.unicode.lower()
+                    if letter in guessed_letters:
+                        continue
+
+                    guessed_letters.add(letter)
+
+                    if letter in word_list:
+                        for index, char in enumerate(word_list):
+                            if char == letter:
+                                masked_word[index] = char
+                    else:
+                        num_errors += 1
+
+        # Check for win or loss
+        if "".join(masked_word) == chosen_word:
+            win_surface = FONT_LARGE.render("You Win!", True, GREEN)
+            screen.blit(win_surface, (400 - win_surface.get_width() // 2, 300))
+            pygame.display.flip()
+            pygame.time.wait(2000)
+            break
+
+        if num_errors >= max_errors:
+            lose_surface = FONT_LARGE.render(f"You Lose! Word: {chosen_word}", True, RED)
+            screen.blit(lose_surface, (400 - lose_surface.get_width() // 2, 300))
+            pygame.display.flip()
+            pygame.time.wait(2000)
+            break
+
+        pygame.display.flip()
+        clock.tick(30)
+
+    pygame.quit()
+
+# Start the game
+game()
