@@ -72,18 +72,5 @@ Merci à la communauté Python et Pygame pour leurs ressources incroyables. Ce p
 📄 Licence
 Ce projet est sous licence MIT. Consultez le fichier LICENSE pour plus de détails.
 
-yaml
-Copier
-Modifier
 
----
 
-### **Instructions pour personnaliser :**
-1. Remplacez `https://github.com/votre-utilisateur/votre-repo.git` par l'URL de votre dépôt GitHub.
-2. Si vous ajoutez de nouvelles fonctionnalités, mettez à jour la section "Fonctionnalités futures".
-
-Une fois le fichier prêt, placez-le à la racine de votre projet et ajoutez-le à votre dépôt :
-```bash
-git add README.md
-git commit -m "Ajout du fichier README"
-git push
